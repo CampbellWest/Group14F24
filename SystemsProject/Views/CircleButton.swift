@@ -23,10 +23,13 @@ struct CircleButton: View {
                 .foregroundColor(Color.white)
             
             Text(title)
-                .font(.largeTitle)
-                .foregroundColor(Color.black)
-                .shadow(radius: 5)
-                .opacity(0.8)
+                .font(.system(size: 32, weight: .bold, design: .monospaced))
+                .foregroundColor(.black)
+                .shadow(radius: 1)
+                //.font(.largeTitle)
+                //.foregroundColor(Color.black)
+                //.shadow(radius: 5)
+                //.opacity(0.8)
         }
         .shadow(radius: 10)
     }

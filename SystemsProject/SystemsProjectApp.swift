@@ -19,10 +19,8 @@ struct SystemsProjectApp: App {
   var body: some Scene {
     WindowGroup {
       NavigationView {
-        AppView()
+        MainAppView()
       }
     }
   }
 }
-
-

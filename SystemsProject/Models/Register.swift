@@ -13,6 +13,7 @@ class RegisterViewModel: ObservableObject {
     
     @Published var email = ""
     @Published var password = ""
+    @Published var name = ""
     
     init() {}
     
@@ -23,7 +24,6 @@ class RegisterViewModel: ObservableObject {
         
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
             guard let userId = result?.user.uid else {
-                print("no create user")
                 return
             }
             
@@ -33,7 +33,8 @@ class RegisterViewModel: ObservableObject {
     
     private func validate() -> Bool {
         guard !email.trimmingCharacters(in: .whitespaces).isEmpty,
-              !password.trimmingCharacters(in: .whitespaces).isEmpty else {
+              !password.trimmingCharacters(in: .whitespaces).isEmpty,
+              !name.trimmingCharacters(in: .whitespaces).isEmpty else {
             return false
         }
         
@@ -48,7 +49,7 @@ class RegisterViewModel: ObservableObject {
     }
     
     private func insertUserIntoRecord(id: String) {
-        let newUser = User(id: id, email: email)
+        let newUser = User(id: id, email: email, name: name)
         let db = Firestore.firestore()
         
         db.collection("users")
