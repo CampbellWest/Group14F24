@@ -26,3 +26,23 @@ extension Double {
         return String(format: "%.2f", self)
     }
 }
+
+extension String {
+    func changeDate() -> String {
+
+        let inputFormatter = DateFormatter()
+        inputFormatter.dateFormat = "yyyy-MM-dd, h:mm:ss a" // Input format, including seconds
+
+        if let date = inputFormatter.date(from: self) {
+        
+            let outputFormatter = DateFormatter()
+            outputFormatter.dateFormat = "yyyy-MM-dd, h:mm a" // Output without seconds 
+            
+            let outputString = outputFormatter.string(from: date)
+            return outputString
+        } else {
+            print("Invalid date format")
+        }
+        return ""
+    }
+}

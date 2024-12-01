@@ -15,7 +15,7 @@ struct DrivingStats {
 }
 
 struct MainAppView: View {
-    @StateObject var viewModel = MainViewModel()
+    @StateObject var viewModel = AuthHandler()
         
         var body: some View {
             
@@ -33,18 +33,18 @@ struct AppView: View {
 
     @State private var currentView: ContentView = .main
     @State private var drivingStats = DrivingStats(score: 0, maxSpeed: 0.0, averageSpeed: 0.0)
+    @State private var showingAccount: Bool = true
         
     var body: some View {
         NavigationView {
-            
             VStack {
                 switch currentView {
                 case .main:
-                    MainView(currentView: $currentView)
+                    MainView(currentView: $currentView, showingAccount: $showingAccount)
                 case .driving:
                     DrivingView(currentView: $currentView, drivingStats: $drivingStats)
                 case .score:
-                    ScoreView(currentView: $currentView, drivingStats: $drivingStats)
+                    ScoreView(currentView: $currentView, drivingStats: $drivingStats, showingAccount: $showingAccount)
                 case .loading:
                     LoadingView(currentView: $currentView)
                 }
@@ -52,14 +52,16 @@ struct AppView: View {
             .padding(.top, -30)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    NavigationLink(destination: UserView()) {
-                        Image(systemName: "person.circle")
-                            .font(.system(size: 30, weight: .bold, design: .monospaced))
-                            .foregroundColor(.black)
+                    if showingAccount {
+                        NavigationLink(destination: UserView()) {
+                            Image(systemName: "person.circle")
+                                .font(.system(size: 30, weight: .bold, design: .monospaced))
+                                .foregroundColor(.black)
+                        }
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Text("App Name")
+                    Text("Track My Drive")
                         .font(.system(size: 30, weight: .bold, design: .monospaced))
                 }
             }
@@ -76,25 +78,19 @@ enum ContentView {
 
 struct MainView: View {
     @Binding var currentView: ContentView
+    @Binding var showingAccount: Bool
     
     var body: some View {
         VStack {
             Button {
                 currentView = .driving
+                showingAccount = false
             } label: {
                 CircleButton(title: "Start Drive")
                 
             }
             .padding(.top, -75)
         }
-    }
-}
-
-struct LoadingView: View {
-    @Binding var currentView: ContentView
-    var body: some View {
-        CircleButton(title: "Analyzing...")
-            .padding(.top, -75)
     }
 }
 
@@ -160,10 +156,19 @@ func updateDrivingStats(drivingStats: Binding<DrivingStats>, locationManager: Lo
     }
 }
 
+struct LoadingView: View {
+    @Binding var currentView: ContentView
+    var body: some View {
+        CircleButton(title: "Analyzing...")
+            .padding(.top, -75)
+    }
+}
+
 struct ScoreView: View {
     
     @Binding var currentView: ContentView
     @Binding var drivingStats: DrivingStats
+    @Binding var showingAccount: Bool
     
     @StateObject var databaseModel = Database()
     
@@ -172,6 +177,7 @@ struct ScoreView: View {
             Button {
                 databaseModel.saveScore(drivingStats: drivingStats)
                 currentView = .main
+                showingAccount = true
             } label: {
                 CircleButton(title: "\(drivingStats.score)%")
             }

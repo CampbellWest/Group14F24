@@ -9,6 +9,7 @@ import Foundation
 import FirebaseAuth
 import FirebaseFirestore
 
+@MainActor
 class UserModel: ObservableObject {
     
     @Published var driverStats: [Stats] = []
@@ -51,12 +52,17 @@ class UserModel: ObservableObject {
                                     averageSpeed: data["averageSpeed"] as! Double,
                                     date: data["date"] as! String)
             
-            driverStats.append(newDriverStats)
+            
+            self.driverStats.append(newDriverStats)
+            
+            
             if driverStats.count == 10 {
                 return
             }
         }
     }
+    
+
     
     // retrieve last 10 drives into an array
     

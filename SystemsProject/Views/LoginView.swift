@@ -40,7 +40,7 @@ struct LoginView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Text("App Name")
+                    Text("Track My Drive")
                         .font(.system(size: 30, weight: .bold, design: .monospaced))
                         
                 }

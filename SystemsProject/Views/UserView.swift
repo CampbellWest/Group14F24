@@ -4,14 +4,6 @@
 //
 //  Created by Campbell West on 2024-11-05.
 //
-/*
- struct Stats: Codable {
-     let score: Int
-     let maxSpeed: Double
-     let averageSpeed: Double
-     let date: String
- }
- */
 
 import SwiftUI
 
@@ -22,37 +14,47 @@ struct UserView: View {
     
     var body: some View {
         NavigationView {
+            let sortedDriverStats = viewModel.driverStats.sorted { $0.date > $1.date }
             VStack {
                 HStack{
-                    Text("Hello, \(viewModel.user?.name ?? "")!")
+                    Text("Hello, \(viewModel.user?.name ?? "User")!")
                         .font(.system(size: 20, weight: .bold, design: .monospaced))
                         .padding(.horizontal)
                         .padding(.vertical, 10)
                     Spacer()
                 }
-                
-                Text("Most Recent Trip")
-                    .font(.system(size: 20, weight: .medium, design: .monospaced))
-                
-                Text("Last 10 Trips")
-                    .font(.system(size: 20, weight: .medium, design: .monospaced))
-                
-                ScrollView {
-                    ForEach(viewModel.driverStats, id: \.self) { stat in
-                        Text("\(stat.score)")
+            
+                HStack {
+                    VStack {
+                        Text("Most Recent Trip")
+                            .font(.system(size: 20, weight: .medium, design: .monospaced))
+                            .padding(.horizontal)
+                        
+                        if viewModel.driverStats.isEmpty {
+                            Text("No Recent Trips")
+                        } else {
+                            DriverStats(driverStats: sortedDriverStats.first!)
+                        }
                     }
-                    
-                    /*               if let user = viewModel.user {
-                     Text(user.email)
-                     Button {
-                     viewModel.signOut()
-                     } label: {
-                     Text("Log Out")
-                     }
-                     } else {
-                     Text("Loading Profile...")
-                     }
-                     */
+                    Spacer()
+                }
+                Divider()
+                    .hidden()
+                HStack {
+                    VStack {
+                        Text("Last 10 Trips")
+                            .font(.system(size: 20, weight: .medium, design: .monospaced))
+                            .padding(.horizontal)
+                        
+                        let sortedDriverStats = viewModel.driverStats.sorted { $0.date > $1.date }
+                        ScrollView {
+                            ForEach(sortedDriverStats, id: \.self) { stat in
+                                Divider()
+                                DriverStats(driverStats: stat)
+                            }
+                        }
+                    }
+                    Spacer()
                 }
                 
                 ConfirmLogOutButton
@@ -65,7 +67,7 @@ struct UserView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Text("Account Settings")
+                    Text("Account")
                         .font(.system(size: 30, weight: .bold, design: .monospaced))
                 }
             }

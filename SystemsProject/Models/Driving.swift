@@ -56,8 +56,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     func calculateDrivingStatistics() -> DrivingStats {
-        var score = 100
-        let accelerationThreshold = 3.0
+        var score = 100.0
+        let accelerationThreshold = 5.0
         var hardBrakingCount = 0
         var hardAccelerationCount = 0
         var maxSpeed = 0.0
@@ -67,21 +67,24 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         let totalSpeed = speedInstances.reduce(0, +)
         let averageSpeed = (totalSpeed / Double(speedInstances.count)) * 3.6
         
+        let totalDistance = speedInstances.reduce(0.0) { $0 + ($1 * 0.5) } // Approximate distance in meters
+        let lengthFactor = max(1.0, totalDistance / 1000.0) // Normalize by dividing by 1000 (distance in km)
+        
         if speedInstances.count > 1 {
             for i in 1..<speedInstances.count {
                 let acceleration = (speedInstances[i] - speedInstances[i - 1]) / 0.5
                 
                 if acceleration > accelerationThreshold {
                     hardAccelerationCount += 1
-                    score -= 2
+                    score -= (2 / lengthFactor)
                 } else if acceleration < -accelerationThreshold {
                     hardBrakingCount += 1
-                    score -= 2
+                    score -= (2 / lengthFactor)
                 }
                 
                 let speedChange = abs(speedInstances[i] - speedInstances[i - 1])
-                if speedChange > 0.1 * speedInstances[i - 1] {
-                    score -= 1
+                if speedChange > 0.2 * speedInstances[i - 1] {
+                    score -= (1 / lengthFactor)
                 }
                 if speedInstances[i] > maxSpeed {
                     maxSpeed = speedInstances[i]
@@ -93,7 +96,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             maxSpeed = maxSpeed * 3.6
             
-            finalScore = min(100, max(0, score))
+            finalScore = min(100, max(0, Int(score)))
             drivingStats = DrivingStats(score: finalScore, maxSpeed: maxSpeed, averageSpeed: averageSpeed)
             
         } else {
